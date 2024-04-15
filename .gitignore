@@ -1,0 +1,8 @@
+clip2protect/
+*.zip
+*.pt
+*.pyc
+*.pth
+*/__pycache__*
+models/assets/datasets/
+pretrained_models/assets/datasets/

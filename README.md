@@ -120,20 +120,30 @@ pip install -r requirements.txt
 4. **Acquire latent codes**:
    - We assume the latent codes are available in the `latents.pt` file.
    - You can acquire the latent codes of the face images to be protected using the encoder4editing (e4e) method available [here](https://github.com/omertov/encoder4editing).
+```bash
+conda activate encoder4editing
+cd encoder4editing
+python scripts/inference.py \
+--images_dir="/home/ptthang/UARK CLASS/Clip2Protect/input_images" \
+--save_dir="/home/ptthang/UARK CLASS/Clip2Protect/ouput_images" \
+--latents_only \
+"/home/ptthang/UARK CLASS/Clip2Protect/models/e4e_ffhq_encode.pt"
+cd .. 
+```
 
 5. **Run the code**:
    - The core functionality is in `main.py`.
    - Provide the `latents.pt` file and the corresponding faces directory, named 'input_images'.
    - Generate the protected faces in the 'results' folder by running the following command:
-     ```shell
-     python main.py --data_dir input_images --latent_path latents.pt --protected_face_dir results
-     ```
+```shell
+python main.py --data_dir input_images --latent_path ouput_images/latents.pt --protected_face_dir results
+```
 
 6. **Generator finetuning and adversarial optimization stages**:
    - The generator finetuning is implemented in `pivot_tuning.py`.
    - The adversarial optimization is implemented in `adversarial_optimization.py`.
 
-
+pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html
 
 
 
