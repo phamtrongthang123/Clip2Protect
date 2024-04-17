@@ -6,3 +6,6 @@ clip2protect/
 */__pycache__*
 models/assets/datasets/
 pretrained_models/assets/datasets/
+datasets/
+auto_*
+
