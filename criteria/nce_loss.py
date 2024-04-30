@@ -75,29 +75,31 @@ class NCELoss(torch.nn.Module):
         return text_direction
 
     def infonce_loss(self, src_img: torch.Tensor, source_class: str, target_img: torch.Tensor, target_class: str) -> torch.Tensor:
-        
-        source_text = self.get_text_features(source_class)
+        # the text features are extracted from CLIP text model. 
+        source_text = self.get_text_features(source_class) # shape [79, 512], source_class = "face"
 
-        target_text = self.get_text_features(target_class).mean(axis=0, keepdim=True)
+        target_text = self.get_text_features(target_class).mean(axis=0, keepdim=True) # shape [1, 512], target_class = "red lipstick with pink eyeshadows"
 
-        src_img    = self.get_image_features(src_img)
-        target_img = self.get_image_features(target_img)
-        target_text = target_text.repeat(target_img.shape[0],1)
-        query = (target_img - src_img)
-        query /= query.clone().norm(dim=-1, keepdim=True)
+        # the image features are extracted from CLIP image model.
+        src_img    = self.get_image_features(src_img) # shape [1,512]
+        target_img = self.get_image_features(target_img) # shape [1,512]
+        target_text = target_text.repeat(target_img.shape[0],1) # shape [1,512], this is probably applying for all images 
+        query = (target_img - src_img) # 1,512
+        query /= query.clone().norm(dim=-1, keepdim=True) # get the distance between target img and source img and then normalize 
 
-        pos1_direction = self.compute_text_direction(source_class, target_class)
-        pos1_direction = pos1_direction.repeat(target_img.shape[0],1)
+        pos1_direction = self.compute_text_direction(source_class, target_class) # 1,512
+        pos1_direction = pos1_direction.repeat(target_img.shape[0],1) # this is the same, but for text 
 
-        pos2_direction = (target_text - src_img)
-        pos2_direction /= pos2_direction.clone().norm(dim=-1, keepdim=True)
+        pos2_direction = (target_text - src_img) # 1,512
+        pos2_direction /= pos2_direction.clone().norm(dim=-1, keepdim=True) # this is between target text and source img
        
-        neg_direction = (source_text - src_img[:1])
-        neg_direction /= neg_direction.clone().norm(dim=-1, keepdim=True)
+        neg_direction = (source_text - src_img[:1]) # 79,512
+        neg_direction /= neg_direction.clone().norm(dim=-1, keepdim=True) # this is between source text and source img
         # target img - source img -> query
         # target text - source text-> pos1
         # target text - source img -> pos2
-        # souce text - source img -> neg
+        # source text - source img -> neg
+        # then push everything into InfoNCE. To understand this, think under abstract perspective. source text - source img will remain some abstract represent a "face" of the source (the original input we pass into the model). target img - source img will represent the difference the current changes we made to the source image. target text - source text will represent the difference between the current changes we made to the source image and the target text. In other words, we want to make the different between the change and the original to be similar to the difference between normal face and makeup face.
         return self.InfoNCE(query.repeat(2,1), torch.cat([pos1_direction,pos2_direction], 0), neg_direction)
 
 
@@ -105,3 +107,4 @@ class NCELoss(torch.nn.Module):
         clip_loss = self.infonce_loss(src_img, source_class, target_img, target_class)
 
         return clip_loss
+        

@@ -69,6 +69,7 @@ class Adversarial_Opt:
         self.num_aug = args.num_aug
         self.nce_loss = nce_loss.NCELoss('cuda', clip_model="ViT-B/32")
         self.source_text = args.source_text
+        # this is the makeup prompt.
         self.description = args.makeup_prompt
         self.face_models = FaceRecognitionModels()
         self.fr_model_m = self.face_models.load_mobile_face_net()
@@ -201,14 +202,14 @@ class Adversarial_Opt:
     
     def run(self):
         
-        target_embbeding_m, target_embbeding_facenet, target_embbeding_152, target_embbeding_50,target_eval = self.get_target_embeddings()
+        target_embbeding_m, target_embbeding_facenet, target_embbeding_152, target_embbeding_50,target_eval = self.get_target_embeddings() # target_embbeding_m.shape = [1,512],  target_embbeding_facenet.shape = [1,512], target_embbeding_152.shape = [1,512], target_embbeding_50.shape = [1,512], target_eval.shape = torch.Size([1, 3, 671, 525]). The target is the original image of the target identity, for example 085807.jpg. We need this 
         
         for ff, (latent, path) in enumerate(zip(self.latents, self.path)):
-            
+            # path = 'auto_input_images/man.jpg'; latent = torch.Size([1, 18, 512])
             with torch.no_grad():
-                g_ema = torch.load(self.generators[ff]).eval() #loading fine-tuned generator
+                g_ema = torch.load(self.generators[ff]).eval() #loading fine-tuned generator, this is a nn.Module object
    
-            _,latent_cl, noisss = self.process_latent(latent, self.noi[ff]) #processing latent and noise
+            _,latent_cl, noisss = self.process_latent(latent, self.noi[ff]) #processing latent and noise. latent_cl.shape = torch.Size([1, 18, 512]), noisss is a list, 
             img_org_ = self.get_image_gen(latent, noisss,g_ema) #augmenting image
             
             
@@ -223,18 +224,22 @@ class Adversarial_Opt:
                 img_gen_, _ = g_ema([latent], input_is_latent=True, noise=noisss)
                 img_gen_ = ((img_gen_+1)/2).clamp(0,1)
 
-                img_gen_aug = torch.cat([self.augment(img_gen_) for i in range(self.num_aug)], dim=0)                     
+                img_gen_aug = torch.cat([self.augment(img_gen_) for i in range(self.num_aug)], dim=0) 
+                # this is the align loss to makeup prompt.                    
                 c_loss = self.nce_loss(img_org_, self.source_text,img_gen_aug, self.description).sum()
 
-                l2_loss = ((latent_cl - latent) ** 2).sum()
+                l2_loss = ((latent_cl - latent) ** 2).sum() # this is to make sure that the latent is not too far from the original latent.
  
                 #cropping
                 img_gen = img_gen_[:,:,round(bb_src1[1])-self.margin:round(bb_src1[3])+self.margin,round(bb_src1[0])-self.margin:round(bb_src1[2])+self.margin]
 
-                adv_loss_m_sim, adv_loss_facenet_sim, adv_loss_152_sim, adv_loss_50_sim,adv_loss_m,adv_loss_facenet,adv_loss_152,adv_loss_50 = self.get_adv_loss(img_gen, source_embbeding_m_, source_embbeding_facenet_, source_embbeding_152_, source_embbeding_50_,target_embbeding_m, target_embbeding_facenet, target_embbeding_152, target_embbeding_50)
+                # the idea of adversarial loss is to make sure that the latent representation of the generated image is similar to the target image. For example an unseen, secret face image. However, this may change the identity of the generated image. That's why the l2 loss is added to make sure that the latent is not too far from the original latent.
+                # So if you have a model, you can use L2 and this loss to attack that model. The clip loss is used to make sure that the generated image is similar to the makeup prompt is the main contribution of this work.
+                # adv_loss_m_sim, adv_loss_facenet_sim, adv_loss_152_sim, adv_loss_50_sim,adv_loss_m,adv_loss_facenet,adv_loss_152,adv_loss_50 = self.get_adv_loss(img_gen, source_embbeding_m_, source_embbeding_facenet_, source_embbeding_152_, source_embbeding_50_,target_embbeding_m, target_embbeding_facenet, target_embbeding_152, target_embbeding_50)
                                             
                 
-                loss = self.calculate_loss(self.model, l2_loss, c_loss, adv_loss_m_sim, adv_loss_facenet_sim, adv_loss_152_sim, adv_loss_50_sim, adv_loss_m, adv_loss_facenet, adv_loss_152, adv_loss_50)               
+                # loss = self.calculate_loss(self.model, l2_loss, c_loss, adv_loss_m_sim, adv_loss_facenet_sim, adv_loss_152_sim, adv_loss_50_sim, adv_loss_m, adv_loss_facenet, adv_loss_152, adv_loss_50)            
+                loss =  self.lat_hyp * l2_loss   + self.c_hyp*c_loss
                 loss.backward()
                 
                 latent.grad[0][0:8] = torch.zeros(8,512) 

@@ -21,6 +21,7 @@ def parse_args():
     # arguments for the stage-2 (adversarial optimization)
     parser.add_argument('--num_aug', type=int, default=1)
     parser.add_argument('--source_text', type=str, default='face')
+    # make up prompt start here. 
     parser.add_argument('--makeup_prompt', type=str, default='red lipstick')
     parser.add_argument('--steps', type=int, default=50)
     parser.add_argument('--target_choice', type=str, default='2', help='Choice of target identity, as in AMT-GAN. We use 4 target identities provided by AMT-GAN')

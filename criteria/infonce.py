@@ -87,11 +87,11 @@ def info_nce(query, positive_key, negative_keys=None, temperature=0.1, reduction
         # Explicit negative keys
 
         # Cosine between positive pairs
-        positive_logit = torch.sum(query * positive_key, dim=1, keepdim=True)
+        positive_logit = torch.sum(query * positive_key, dim=1, keepdim=True) # query * positive_key => shape [2,512], sum => shape [2,1]
 
         if negative_mode == 'unpaired':
             # Cosine between all query-negative combinations
-            negative_logits = query @ transpose(negative_keys)
+            negative_logits = query @ transpose(negative_keys) # query => shape [2,512], negative_keys => shape [79,512], transpose => shape [512,79], query @ transpose(negative_keys) => shape [2,79]
 
         elif negative_mode == 'paired':
             query = query.unsqueeze(1)
@@ -99,8 +99,8 @@ def info_nce(query, positive_key, negative_keys=None, temperature=0.1, reduction
             negative_logits = negative_logits.squeeze(1)
 
         # First index in last dimension are the positive samples
-        logits = torch.cat([positive_logit, negative_logits], dim=1)
-        labels = torch.zeros(len(logits), dtype=torch.long, device=query.device)
+        logits = torch.cat([positive_logit, negative_logits], dim=1) # shape [2,80]
+        labels = torch.zeros(len(logits), dtype=torch.long, device=query.device) # shape [2] = [0,0]
     else:
         # Negative keys are implicitly off-diagonal positive keys.
 
@@ -110,7 +110,7 @@ def info_nce(query, positive_key, negative_keys=None, temperature=0.1, reduction
         # Positive keys are the entries on the diagonal
         labels = torch.arange(len(query), device=query.device)
 
-    return F.cross_entropy(logits / temperature, labels, reduction=reduction)
+    return F.cross_entropy(logits / temperature, labels, reduction=reduction) # all ground truth labels are 0, so the loss will guide the model to make the positive pairs (at index 0) to have higher cosine similarity than negative pairs.
     # return 1.0 - torch.nn.CosineSimilarity()(logits / temperature, labels)
 
 def transpose(x):
