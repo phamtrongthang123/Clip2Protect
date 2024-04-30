@@ -1,10 +1,12 @@
+# python demo.py --image_path 047073.jpg
 from gender_detector import get_gender
 import os 
 import argparse
-prompt_bank = {'Woman': 'red lipstick with pink eyeshadows', 'Man': 'no makeup'}
+
+prompt_bank = {'Man': 'red lipstick with pink eyeshadows', 'Woman': 'no makeup'}
 
 # get img path from args
-parser = argparse.ArgumentParser(description="CLIP2Protect")
+parser = argparse.ArgumentParser(description="privacy_face_protect")
 parser.add_argument('--image_path', type=str, default='047073.jpg', help='The input image')
 args = parser.parse_args()
 image_path = args.image_path

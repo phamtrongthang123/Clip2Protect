@@ -7,7 +7,7 @@ from adversarial_optimization import Adversarial_Opt
 
 def parse_args():
     # Create the parser
-    parser = argparse.ArgumentParser(description="CLIP2Protect")
+    parser = argparse.ArgumentParser(description="privacy_face_protect")
 
     # arguments for the stage-1 (generator tuning)
     parser.add_argument('--data_dir', type=str, default='input_images', help='The directory of input images')

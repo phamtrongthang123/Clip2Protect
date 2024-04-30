@@ -18,7 +18,7 @@ import numpy as np
 import glob
 import random
 import torchvision
-from utils.clip2protect_utils import *
+from utils.privacy_face_protect_utils import *
 
 #clip for nce loss
 import criteria.clip_loss as clip_loss

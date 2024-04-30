@@ -12,7 +12,7 @@
 <p align="center">
   <img src="imgs/github_logo.jpg" align="center" width="60%">
 
-  <h2 align="center"><strong>CLIP2Protect: Protecting Facial Privacy using Text-Guided Makeup via Adversarial Latent Search [CVPR 2023]</strong></h2>
+  <h2 align="center"><strong>privacy_face_protect: Protecting Facial Privacy using Text-Guided Makeup via Adversarial Latent Search [CVPR 2023]</strong></h2>
 
   <p align="center">
     <a href="https://fahadshamshad.github.io"><strong> Fahad Shamshad</strong></a>,
@@ -25,11 +25,11 @@
 
 
 <p align="center">
-  <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Shamshad_CLIP2Protect_Protecting_Facial_Privacy_Using_Text-Guided_Makeup_via_Adversarial_Latent_CVPR_2023_paper.html" target='_blank'>
+  <a href="https://openaccess.thecvf.com/content/CVPR2023/html/Shamshad_privacy_face_protect_Protecting_Facial_Privacy_Using_Text-Guided_Makeup_via_Adversarial_Latent_CVPR_2023_paper.html" target='_blank'>
     <img src="https://img.shields.io/badge/CVPR-Paper-blue.svg">
   </a> 
   
-  <a href="https://fahadshamshad.github.io/Clip2Protect/" target='_blank'>
+  <a href="https://fahadshamshad.github.io/privacy_face_protect/" target='_blank'>
     <img src=https://img.shields.io/badge/Project-Website-87CEEB">
   </a>
 
@@ -77,7 +77,7 @@
 
 ## Pipeline
 
-**CLIP2Protect** generates face images that look natural and real. **But here's the special part**: it also ensures a high level of privacy protection. This means you can keep sharing images without worrying about unwanted tracking. It consists of two stages. 
+**privacy_face_protect** generates face images that look natural and real. **But here's the special part**: it also ensures a high level of privacy protection. This means you can keep sharing images without worrying about unwanted tracking. It consists of two stages. 
 - **The latent code initialization stage** reconstructs the given face image in the latent space by fine-tuning the generative model.
 - **The text-guided adversarial optimization stage** utilizes user-defined makeup text prompts and identity-preserving regularization to guide the search for adversarial codes within the latent space to effectively protect the facial privacy.
 
@@ -92,15 +92,15 @@
 
 - **Get code**
 ```shell 
-git clone https://github.com/fahadshamshad/Clip2Protect.git
+git clone https://github.com/fahadshamshad/privacy_face_protect.git
 ```
 
 - **Build environment**
 ```shell
-cd Clip2Protect
+cd privacy_face_protect
 # use anaconda to build environment 
-conda create -n clip2protect python=3.8
-conda activate clip2protect
+conda create -n privacy_face_protect python=3.8
+conda activate privacy_face_protect
 # install packages
 pip install -r requirements.txt
 ```
@@ -124,10 +124,10 @@ pip install -r requirements.txt
 conda activate encoder4editing
 cd encoder4editing
 python scripts/inference.py \
---images_dir="/home/ptthang/UARK CLASS/Clip2Protect/input_images" \
---save_dir="/home/ptthang/UARK CLASS/Clip2Protect/ouput_images" \
+--images_dir="/home/ptthang/UARK CLASS/privacy_face_protect/input_images" \
+--save_dir="/home/ptthang/UARK CLASS/privacy_face_protect/ouput_images" \
 --latents_only \
-"/home/ptthang/UARK CLASS/Clip2Protect/models/e4e_ffhq_encode.pt"
+"/home/ptthang/UARK CLASS/privacy_face_protect/models/e4e_ffhq_encode.pt"
 cd .. 
 ```
 
@@ -149,10 +149,10 @@ pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f ht
 
 ## Citation 
 
-If you're using CLIP2Protect in your research or applications, please cite using this BibTeX:
+If you're using privacy_face_protect in your research or applications, please cite using this BibTeX:
 ```bibtex
-@inproceedings{shamshad2023clip2protect,
-  title={CLIP2Protect: Protecting Facial Privacy Using Text-Guided Makeup via Adversarial Latent Search},
+@inproceedings{shamshad2023privacy_face_protect,
+  title={privacy_face_protect: Protecting Facial Privacy Using Text-Guided Makeup via Adversarial Latent Search},
   author={Shamshad, Fahad and Naseer, Muzammal and Nandakumar, Karthik},
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
   pages={20595--20605},

@@ -6,9 +6,9 @@ rm results/*
 conda activate encoder4editing
 cd encoder4editing
 python scripts/inference.py \
---images_dir="/home/ptthang/UARK CLASS/Clip2Protect/auto_input_images" \
---save_dir="/home/ptthang/UARK CLASS/Clip2Protect/auto_ouput_images" \
+--images_dir="/home/ptthang/UARK CLASS/privacy_face_protect/auto_input_images" \
+--save_dir="/home/ptthang/UARK CLASS/privacy_face_protect/auto_ouput_images" \
 --latents_only \
 --align \
-"/home/ptthang/UARK CLASS/Clip2Protect/models/e4e_ffhq_encode.pt"
+"/home/ptthang/UARK CLASS/privacy_face_protect/models/e4e_ffhq_encode.pt"
 cd .. 
