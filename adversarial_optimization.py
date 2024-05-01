@@ -1,3 +1,4 @@
+import gc
 import torch
 from torch import nn
 from PIL import Image
@@ -252,6 +253,16 @@ class Adversarial_Opt:
                      with torch.no_grad():
                         success_count = quan(black_box(img_gen.detach(),target_eval,self.model),self.model)
 
-                     torchvision.utils.save_image(img_gen_, f"{self.protected_face_dir}/{str(ff)+'_'+str(i).zfill(5)}.jpg", normalize=True, range=(0, 1))
+                     torchvision.utils.save_image(img_gen_, f"{self.protected_face_dir}/{str(ff)+'_'+path.split('/')[-1] + '_'+str(i).zfill(5)}.jpg", normalize=True, range=(0, 1))
+
+
+                # empty cache and free memory
+                try:
+                    del c_loss, l2_loss, loss
+                    torch.cuda.empty_cache()
+                    gc.collect()
+                except Exception as e: 
+                    print(e)
+                    pass
 
         print(f"Total successes: {success_count[0]} out of {len(self.path)}")

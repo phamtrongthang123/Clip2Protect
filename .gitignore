@@ -8,4 +8,6 @@ models/assets/datasets/
 pretrained_models/assets/datasets/
 datasets/
 auto_*
-
+CelebA_HQ_*
+Images from dataset/
+inverted_images/

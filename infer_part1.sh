@@ -2,7 +2,6 @@
 eval "$(conda shell.bash hook)"
 rm auto_ouput_images/*
 mkdir -p auto_ouput_images
-rm results/*
 conda activate encoder4editing
 cd encoder4editing
 python scripts/inference.py \
